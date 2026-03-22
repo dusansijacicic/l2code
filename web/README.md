@@ -2,6 +2,8 @@
 
 Next.js (App Router) + Supabase (Auth, Postgres, RLS) + Stripe (Checkout, webhook, Connect spremno) + deploy na Vercel.
 
+**Detaljno uputstvo (Supabase + Vercel, korak po korak):** [UPUTSTVO_SUPABASE_I_VERCEL.md](./UPUTSTVO_SUPABASE_I_VERCEL.md)
+
 ## Brzina
 
 - ISR na listi kurseva (`revalidate = 60`).

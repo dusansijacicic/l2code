@@ -8,4 +8,5 @@ npm install
 npm run dev
 ```
 
-Detaljno uputstvo: [web/README.md](web/README.md).
+- Kratak pregled: [web/README.md](web/README.md)
+- **Detaljno: Supabase + Vercel:** [web/UPUTSTVO_SUPABASE_I_VERCEL.md](web/UPUTSTVO_SUPABASE_I_VERCEL.md)
