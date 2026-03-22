@@ -14,13 +14,84 @@ Next.js (App Router) + Supabase (Auth, Postgres, RLS) + Stripe (Checkout, webhoo
 - API ruta `/api/video/lesson` proverava enrollment pre nego što vrati playback URL.
 - U produkciji uključi **potpisane URL-ove** (Mux signed JWT, Cloudflare signed token).
 
+## Supabase — setup korak po korak
+
+### 1. Novi projekat
+
+1. Otvori [supabase.com](https://supabase.com) → **Start your project** / **New project**.
+2. Izaberi organizaciju, **ime projekta** (npr. `kursevi`), **lozinku za bazu** (sačuvaj je negde sigurno).
+3. **Region**: što bliže korisnicima (npr. `Frankfurt` za EU).
+4. Sačekaj da se projekat kreira (~1–2 min).
+
+### 2. API ključevi → `.env.local`
+
+1. U levom meniju: **Project Settings** (zupčanik) → **API**.
+2. Kopiraj:
+   - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
+   - **anon public** ključ → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - **service_role** ključ → `SUPABASE_SERVICE_ROLE_KEY` (samo server, **nikad** u frontend kod ili Git)
+
+U folderu `web`:
+
+```bash
+copy .env.example .env.local
+```
+
+(ili ručno napravi `.env.local` i nalepi vrednosti.)
+
+### 3. Šema baze (tabele, RLS, trigger za nalog)
+
+1. U Supabase: **SQL Editor** → **New query**.
+2. Otvori lokalno `web/supabase/schema.sql`, iskopiraj **ceo** sadržaj, nalepi u editor i klikni **Run**.
+
+Ako dobiješ grešku na triggeru za `auth.users`, u delu:
+
+`execute function public.handle_new_user ()`
+
+probaj zameniti sa:
+
+`execute procedure public.handle_new_user ()`
+
+(zavisi od verzije Postgresa), pa ponovo Run.
+
+### 4. Autentifikacija (email)
+
+1. **Authentication** → **Providers** → **Email**: uključi **Enable Email provider**.
+2. Za brzo lokalno testiranje: **Authentication** → **Providers** → **Email** → isključi **Confirm email** (opciono), ili ostavi uključeno i klikni link iz mejla pri registraciji.
+
+### 5. URL-ovi za redirect (bitno za login)
+
+**Authentication** → **URL Configuration**:
+
+| Polje | Vrednost (lokalno) |
+|--------|---------------------|
+| **Site URL** | `http://localhost:3000` |
+| **Redirect URLs** | `http://localhost:3000/auth/callback` |
+
+Dodaj i produkciju kad deployuješ, npr.:
+
+`https://tvoj-domen.vercel.app/auth/callback`
+
+(Svaki URL u listi u novom redu / kao poseban unos, zavisi od UI-a.)
+
+### 6. Provera
+
+1. `cd web` → `npm install` → `npm run dev`
+2. Otvori `http://localhost:3000/signup`, napravi nalog.
+3. U Supabase: **Table Editor** → `profiles` — trebalo bi da se pojavi red za tvog korisnika (trigger `handle_new_user`).
+
+### 7. Produkcija (Vercel)
+
+U Vercel **Environment Variables** dodaj iste varijable kao u `.env.local`, sa produkcijskim URL-om u `NEXT_PUBLIC_APP_URL` i istim Supabase URL/ključevima. U Supabase **URL Configuration** dodaj produkcijski `Site URL` i `Redirect URL` kao gore.
+
+---
+
 ## Lokalno pokretanje
 
 1. `cd web`
-2. `cp .env.example .env.local` i popuni ključeve.
-3. U Supabase SQL Editor pokreni `supabase/schema.sql`.
-4. Auth → URL configuration: Site URL = `http://localhost:3000`, Redirect = `http://localhost:3000/auth/callback`.
-5. `npm install` && `npm run dev`
+2. `.env.local` kao u odeljku Supabase iznad.
+3. SQL šema već pokrenuta iz `supabase/schema.sql`.
+4. `npm install` && `npm run dev`
 
 ## Stripe
 
