@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": ["web"],
   "scripts": {
+    "postinstall": "node scripts/ensure-lightningcss-linux.cjs",
     "build": "npm run build -w web",
     "dev": "npm run dev -w web",
     "lint": "npm run lint -w web",
