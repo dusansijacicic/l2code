@@ -1,0 +1,12 @@
+{
+  "name": "kursevi-monorepo",
+  "private": true,
+  "workspaces": ["web"],
+  "scripts": {
+    "build": "npm run build -w web",
+    "dev": "npm run dev -w web",
+    "lint": "npm run lint -w web",
+    "seed": "npm run seed -w web",
+    "start": "npm run start -w web"
+  }
+}

@@ -1,6 +1,9 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  /* Monorepo: Vercel/npm workspace — node_modules može biti i iznad web/ */
+  outputFileTracingRoot: path.join(process.cwd(), ".."),
   images: {
     remotePatterns: [
       {
