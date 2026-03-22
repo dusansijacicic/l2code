@@ -1,0 +1,37 @@
+# Ručno pokretanje seed skripte protiv Supabase baze (npr. produkcija).
+#
+# Repo → Settings → Secrets and variables → Actions → New repository secret:
+#   NEXT_PUBLIC_SUPABASE_URL   — https://xxxx.supabase.co
+#   SUPABASE_SERVICE_ROLE_KEY  — service_role JWT (nikad u klijent / commit)
+#
+# Pokretanje: Actions → "Seed database" → Run workflow → branch (main) → Run workflow.
+
+name: Seed database
+
+on:
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: web
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run seed
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run seed
