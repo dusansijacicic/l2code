@@ -2,6 +2,9 @@
   "name": "kursevi-monorepo",
   "private": true,
   "workspaces": ["web"],
+  "overrides": {
+    "tailwindcss": "3.4.17"
+  },
   "scripts": {
     "build": "npm run build -w web",
     "dev": "npm run dev -w web",
