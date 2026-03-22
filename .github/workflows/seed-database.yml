@@ -18,23 +18,26 @@ defaults:
 jobs:
   seed:
     runs-on: ubuntu-latest
-    # checkout/setup-node interno — u skladu sa https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: npm
-          cache-dependency-path: package-lock.json
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run seed
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: npm run seed -w web
+        run: pnpm --filter web seed

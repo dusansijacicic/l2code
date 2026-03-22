@@ -1,15 +1,17 @@
 {
   "name": "kursevi-monorepo",
   "private": true,
-  "workspaces": ["web"],
-  "overrides": {
-    "tailwindcss": "3.4.17"
+  "packageManager": "pnpm@9.15.5",
+  "pnpm": {
+    "overrides": {
+      "tailwindcss": "3.4.17"
+    }
   },
   "scripts": {
-    "build": "npm run build -w web",
-    "dev": "npm run dev -w web",
-    "lint": "npm run lint -w web",
-    "seed": "npm run seed -w web",
-    "start": "npm run start -w web"
+    "build": "pnpm --filter web build",
+    "dev": "pnpm --filter web dev",
+    "lint": "pnpm --filter web lint",
+    "seed": "pnpm --filter web seed",
+    "start": "pnpm --filter web start"
   }
 }
