@@ -32,7 +32,7 @@ export default function RootLayout({
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <footer className="border-t border-zinc-800 py-8 text-center text-xs text-zinc-600">
-          Kursevi · Next.js + Supabase + Stripe
+          Kursevi · Next.js + Supabase + PayPal
         </footer>
       </body>
     </html>

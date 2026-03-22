@@ -1,6 +1,6 @@
 # Kursevi — marketplace platforma
 
-Next.js (App Router) + Supabase (Auth, Postgres, RLS) + Stripe (Checkout, webhook, Connect spremno) + deploy na Vercel.
+Next.js (App Router) + Supabase (Auth, Postgres, RLS) + PayPal (Checkout Orders) + deploy na Vercel.
 
 **Detaljno uputstvo (Supabase + Vercel, korak po korak):** [UPUTSTVO_SUPABASE_I_VERCEL.md](./UPUTSTVO_SUPABASE_I_VERCEL.md)
 
@@ -92,15 +92,20 @@ U Vercel **Environment Variables** dodaj iste varijable kao u `.env.local`, sa p
 
 1. `cd web`
 2. `.env.local` kao u odeljku Supabase iznad.
-3. SQL šema već pokrenuta iz `supabase/schema.sql`.
-4. `npm install` && `npm run dev`
+3. SQL šema iz `supabase/schema.sql` (ako si ranije imao staru šemu, pokreni i `supabase/migrations/20250322120000_paypal_enrollments.sql`).
+4. PayPal ključevi u `.env.local` (vidi odeljak ispod).
+5. `npm install` && `npm run dev`
 
-## Stripe
+## PayPal
 
-- Test ključevi iz Stripe Dashboard-a.
-- Webhook endpoint (lokalno: Stripe CLI `stripe listen --forward-to localhost:3000/api/webhooks/stripe`).
-- `STRIPE_PLATFORM_ONLY=true` (podrazumevano): sav promet ide na platformski nalog; u bazi i dalje beležiš `platform_fee_cents` / `instructor_earning_cents` za isplate.
-- Kada instruktor završi Connect onboarding, u `profiles.stripe_connect_account_id` stavi njegov `acct_...` i postavi `STRIPE_PLATFORM_ONLY=false`.
+1. [developer.paypal.com](https://developer.paypal.com) → **Apps & Credentials** → **Sandbox** (pa kasnije **Live**).
+2. Kreiraj **REST API app** → kopiraj **Client ID** i **Secret** u `.env.local`:
+   - `PAYPAL_CLIENT_ID`
+   - `PAYPAL_CLIENT_SECRET`
+   - `PAYPAL_ENV=sandbox` (za produkciju: `live` + live ključevi).
+3. `NEXT_PUBLIC_APP_URL` mora biti isti kao URL na kom korisnik završava plaćanje (npr. `http://localhost:3000` lokalno, ili `https://tvoj-projekat.vercel.app` na Vercelu). PayPal redirectuje na `${APP_URL}/paypal/return`.
+4. Sandbox test nalog: PayPal Developer → **Accounts** → test buyer.
+5. Novac trenutno ide na **tvoj** PayPal business/sandbox merchant; automatska podela sa instruktorima (marketplace) zahteva PayPal Commerce Platform / odvojeni dogovor — u bazi se i dalje čuva `platform_fee_cents` i `instructor_earning_cents` za tvoju evidenciju i ručne isplate.
 
 ## Struktura
 
@@ -125,6 +130,6 @@ Zatim podesi `MUX_SIGNED_PLAYBACK_BASE_URL` ili Cloudflare subdomain u `.env` pr
 
 ## Deploy (Vercel)
 
-- Poveži repo, dodaj iste env varijable.
-- `NEXT_PUBLIC_APP_URL` = produkcijski URL.
-- Stripe webhook URL = `https://tvoj-domen/api/webhooks/stripe`.
+- **Root Directory** = `web`.
+- Dodaj env varijable (Supabase + PayPal + `NEXT_PUBLIC_APP_URL` = produkcijski URL).
+- U PayPal Live app podešavanjima dozvoli return URL: `https://tvoj-domen/paypal/return`.

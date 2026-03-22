@@ -68,7 +68,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
-Stripe i video ključeve možeš dodati kasnije; za čisto testiranje Supabase + login dovoljno je gore navedeno.
+PayPal i video ključeve možeš dodati kasnije; za čisto testiranje Supabase + login dovoljno je gore navedeno.
 
 ## A4. Šema baze (tabele, RLS, trigger)
 
@@ -186,15 +186,20 @@ Dodaj sledeće (imena moraju da se poklapaju tačno sa kodom):
 
 **Preporuka za `NEXT_PUBLIC_APP_URL`:**
 
-- Posle **prvog** uspešnog deploya kopiraš URL projekta (npr. `https://something.vercel.app`) i staviš ga kao `NEXT_PUBLIC_APP_URL` za **Production**, pa **Redeploy** (jer se ova varijabla čita u build/runtime za Stripe success URL itd.).
+- Posle **prvog** uspešnog deploya kopiraš URL projekta (npr. `https://something.vercel.app`) i staviš ga kao `NEXT_PUBLIC_APP_URL` za **Production**, pa **Redeploy** (PayPal `return_url` mora da se poklapa sa ovim domenom + `/paypal/return`).
 
-Opciono (kad budeš koristio plaćanje i video):
+**PayPal (obavezno za kupovinu kurseva):**
 
 | Ime | Napomena |
 |-----|----------|
-| `STRIPE_SECRET_KEY` | Iz Stripe Dashboard (test/live) |
-| `STRIPE_WEBHOOK_SECRET` | Posle kreiranja webhook endpointa za produkcijski URL |
-| `STRIPE_PLATFORM_ONLY` | `true` dok sve ide na jedan Stripe nalog |
+| `PAYPAL_CLIENT_ID` | [developer.paypal.com](https://developer.paypal.com) → Apps & Credentials |
+| `PAYPAL_CLIENT_SECRET` | Isti ekran (Secret) |
+| `PAYPAL_ENV` | `sandbox` za test, `live` za produkciju |
+
+Opciono (video):
+
+| Ime | Napomena |
+|-----|----------|
 | `MUX_SIGNED_PLAYBACK_BASE_URL` | Kad podesiš Mux |
 | `CF_STREAM_CUSTOMER_SUBDOMAIN` | Kad podesiš Cloudflare Stream |
 
@@ -234,12 +239,11 @@ Redosled koji smisleno radi:
 5. Na Vercelu postavi `NEXT_PUBLIC_APP_URL` na taj URL → **Redeploy**.
 6. Test: produkcijski sajt → Registracija / Prijava.
 
-Za **Stripe** u produkciji:
+Za **PayPal** u produkciji:
 
-1. U Stripe Dashboard: **Developers** → **Webhooks** → **Add endpoint**.
-2. URL: `https://tvoj-domen.vercel.app/api/webhooks/stripe`
-3. Izaberi događaje (npr. `checkout.session.completed`).
-4. Kopiraj **Signing secret** → `STRIPE_WEBHOOK_SECRET` na Vercelu.
+1. U PayPal Developer pređi na **Live** aplikaciju i live Client ID / Secret na Vercel (`PAYPAL_ENV=live`).
+2. U PayPal app podešavanjima (gde god traži return URL) dozvoli: `https://tvoj-domen.vercel.app/paypal/return`.
+3. `NEXT_PUBLIC_APP_URL` na Vercelu mora biti isti kao glavni URL sajta (bez `/` na kraju).
 
 ---
 
@@ -251,8 +255,8 @@ Proveri da li su URL i `anon` ključ iskopirani celi, bez razmaka; da li su na V
 **Login me vraća na localhost**  
 `Site URL` i `Redirect URLs` u Supabase moraju da sadrže tačan URL gde trenutno koristiš app (lokal ili Vercel).
 
-**Webhook / enrollments ne rade**  
-Proveri `SUPABASE_SERVICE_ROLE_KEY` na Vercelu i da webhook ruta nije blokirana (POST, raw body — kod tebe je već podešen u projektu).
+**Plaćanje / enrollments ne rade**  
+Proveri PayPal sandbox nalog, `PAYPAL_*` env na Vercelu i da si u Supabase pokrenuo migraciju sa `paypal_order_id` kolonama (`supabase/migrations/20250322120000_paypal_enrollments.sql` ako je baza starija). Upis u `enrollments` ide preko `SUPABASE_SERVICE_ROLE_KEY` na stranici `/paypal/return` posle uspešnog capture-a.
 
 **Build: Cannot find module**  
 Pokreni lokalno `cd web && npm run build` — ako tamo radi, na Vercelu skoro sigurno **Root Directory** mora biti `web`.

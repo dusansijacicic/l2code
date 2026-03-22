@@ -9,6 +9,7 @@ export function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const err = params.get("error");
+  const nextPath = params.get("next");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,9 @@ export function LoginForm() {
         setMessage(error.message);
         return;
       }
-      router.push("/dashboard");
+      const safeNext =
+        nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//") ? nextPath : "/dashboard";
+      router.push(safeNext);
       router.refresh();
     } finally {
       setLoading(false);

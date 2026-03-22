@@ -118,6 +118,8 @@ create table public.enrollments (
   course_id uuid not null references public.courses (id) on delete cascade,
   stripe_checkout_session_id text,
   stripe_payment_intent_id text,
+  paypal_order_id text,
+  paypal_capture_id text,
   amount_paid_cents integer,
   platform_fee_cents integer,
   instructor_earning_cents integer,
@@ -319,7 +321,7 @@ create policy "enrollments_select_instructor" on public.enrollments
       where c.id = enrollments.course_id and c.instructor_id = auth.uid()
     )
   );
--- Upisi kreira samo backend (Stripe webhook + service role)
+-- Upisi kreira samo backend (PayPal return + service role; opciono webhook)
 
 create policy "progress_select_own" on public.lesson_progress
   for select using (auth.uid() = user_id);

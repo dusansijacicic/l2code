@@ -8,7 +8,7 @@ type Props = {
   label?: string;
 };
 
-export function CheckoutButton({ courseSlug, disabled, label = "Kupi pristup" }: Props) {
+export function CheckoutButton({ courseSlug, disabled, label = "Plati sa PayPal" }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,7 +16,7 @@ export function CheckoutButton({ courseSlug, disabled, label = "Kupi pristup" }:
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/checkout", {
+      const res = await fetch("/api/paypal/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ courseSlug }),

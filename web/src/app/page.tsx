@@ -47,7 +47,7 @@ export default async function HomePage() {
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-zinc-400">
             Platforma je optimizovana za brzo učitavanje, CDN video i bezbedan pristup lekcijama. Instruktori
-            dobijaju udeo od prodaje preko Stripe Connect-a.
+            plaćanje preko PayPal-a; podela prihoda beleži se u bazi.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Link
