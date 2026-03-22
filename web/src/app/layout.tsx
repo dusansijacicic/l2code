@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Kursevi — marketplace za online kurseve",
-  description: "Uči, predaj, deli prihod. Brza platforma na Next.js, Supabase i Vercel.",
+  description: "Uči, predaj, deli prihod. Brza platforma na Next.js, Supabase i PayPal.",
 };
 
 export default function RootLayout({
